@@ -1,0 +1,11 @@
+{% extends "horizon/common/_modal.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block modal-header %}{% endblock %}
+{% block modal-body %}
+<iframe style="width:90%;height:90%" src="{{redirect}}"</iframe>
+{% endblock %}
+
+{% block modal-footer %}
+{% endblock %}

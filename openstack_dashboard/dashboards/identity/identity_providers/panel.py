@@ -1,4 +1,8 @@
-# Copyright 2014 Hewlett-Packard Development Company, L.P.
+# Copyright 2012 United States Government as represented by the
+# Administrator of the National Aeronautics and Space Administration.
+# All Rights Reserved.
+#
+# Copyright 2012 Nebula, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -12,17 +16,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
 from django.utils.translation import ugettext_lazy as _
 
 import horizon
 
-
-class Identity(horizon.Dashboard):
-    name = _("Identity")
-    slug = "identity"
-    default_panel = 'projects'
-    panels = ('domains', 'projects', 'users', 'groups', 'roles', 'mappings', 'identity_providers')
+from openstack_dashboard.dashboards.identity import dashboard
 
 
-horizon.register(Identity)
+class IdentityProviders(horizon.Panel):
+    name = _("Identity Providers")
+    slug = 'identity_providers'
+
+
+dashboard.Identity.register(IdentityProviders)

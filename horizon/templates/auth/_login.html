@@ -31,3 +31,32 @@
 {% block modal-footer %}
   <button type="submit" class="btn btn-primary pull-right">{% trans "Sign In" %}</button>
 {% endblock %}
+{% block modal-header_f %}{% trans "Log In" %}{% endblock %}
+{% block modal_class_f %}login {% if hide %}modal hide{% endif %}{% endblock %}
+{% block form_id_f %}fed_login{% endblock %}
+{% block form_action_f %}{% url 'fed_login' %}{% endblock %}
+{% block autocomplete_f %}{{ HORIZON_CONFIG.password_autocomplete }}{% endblock %}
+{% block modal-body_f %}
+  <fieldset>
+    {% if request.user.is_authenticated and 'next' in request.GET %}
+    <div class="control-group clearfix error">
+      <span class="help-inline"><p>{% trans "You do not have permission to access the resource:" %}</p>
+        <p><b>{{ request.GET.next }}</b></p>
+        <p>{% url 'horizon:user_home' as home_url %}{% blocktrans %}Login as different user or go back to <a href="{{ home_url }}"> home page</a>{% endblocktrans %}</p>
+      </span>
+    </div>
+    {% endif  %}
+    {% if request.COOKIES.logout_reason %}
+    <div class="control-group clearfix error">
+      <span class="help-inline"><p>{{ request.COOKIES.logout_reason }}</p></span>
+    </div>
+    {% endif %}
+    {% if next %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ next }}" />{% endif %}
+    {% include "horizon/common/_fed_form_fields.html" %}
+  </fieldset>
+{% endblock %}
+
+{% block modal-footer_f %}
+  <button type="submit" class="btn btn-primary pull-right">{% trans "Sign In" %}</button>
+{% endblock %}
+
