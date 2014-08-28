@@ -1,0 +1,14 @@
+<div class="input">
+    <h2>Choose a project to authenticate to: </h2>
+    <form id='project' method='POST' action='{% url 'fed_projects' %}'>
+    {% csrf_token %}
+    <input type='hidden' name='token' id='token' value='{{token}}'/>
+    <select name='project' id='project'>
+        {% for project in projects %}
+            <option value="{{project.id}}">{{project.name}}</option>
+        {% endfor %}
+    </select>
+    <input type="hidden" name="projects" id="projects" value="{{projects}}" />
+    <input type='submit' value='Choose project' />
+    </form>
+</div>

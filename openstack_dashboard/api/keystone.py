@@ -55,6 +55,15 @@ class IdentityAPIVersionManager(base.APIVersionManager):
             manager = keystoneclient(*args, **kwargs).projects
         return manager
 
+    def get_federated_project_manager(self, *args, **kwargs):
+        print args
+        print kwargs
+        if VERSIONS.active < 3:
+            manager = keystoneclient(*args, **kwargs).tenants
+        else:
+            manager = keystoneclient(*args, **kwargs).federation.projects
+        return manager
+
 
 VERSIONS = IdentityAPIVersionManager(
     "identity", preferred_version=auth_utils.get_keystone_version())
@@ -233,6 +242,9 @@ def get_default_domain(request):
             domain_name = domain.name
         except Exception:
             LOG.warning("Unable to retrieve Domain: %s" % domain_id)
+            domain = domain_get(request, 'default')
+            domain_id = 'default'
+            domain_name = domain.name
     domain = base.APIDictWrapper({"id": domain_id,
                                   "name": domain_name})
     return domain
@@ -262,13 +274,17 @@ def tenant_list(request, paginate=False, marker=None, domain=None, user=None,
         limit = page_size + 1
 
     has_more_data = False
-    if VERSIONS.active < 3:
-        tenants = manager.list(limit, marker)
-        if paginate and len(tenants) > page_size:
-            tenants.pop(-1)
-            has_more_data = True
-    else:
-        tenants = manager.list(domain=domain, user=user)
+    try:
+        if VERSIONS.active < 3:
+            tenants = manager.list(limit, marker)
+            if paginate and len(tenants) > page_size:
+                tenants.pop(-1)
+                has_more_data = True
+        else:
+            tenants = manager.list(domain=domain, user=user)
+    except Exception:
+        manager = VERSIONS.get_federated_project_manager(request, admin=admin)
+        tenants = manager.list()
     return (tenants, has_more_data)
 
 

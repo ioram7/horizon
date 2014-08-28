@@ -28,6 +28,27 @@
         </div>
         <div class="modal-footer">{% block modal-footer %}{% endblock %}</div>
       </form>
+       <div class="modal-header">
+        {% if hide %}<a href="#" class="close" data-dismiss="modal">&times;</a>{% endif %}
+        <h3>{% block modal-header_f %}{% endblock %}</h3>
+      </div>
+      <form id="{% block form_id_f %}{% endblock %}"
+            ng-controller="{% block ng_controller_f %}DummyCtrl{% endblock %}"
+            name="{% block form_name_f %}{% endblock %}"
+            autocomplete="{% block autocomplete_f %}{% endblock %}"
+            class="{% block form_class_f %}{% endblock %}"
+            action="{% block form_action_f %}{% endblock %}"
+            method="{% block form-method_f %}POST{% endblock %}"
+            {% if add_to_field %}data-add-to-field="{{ add_to_field }}"{% endif %} {% block form_attrs_f %}{% endblock %}>{% csrf_token %}
+        <div class="modal-body clearfix">
+        {% block modal-body_f %}
+            <fieldset>
+            {% include "horizon/common/_fed_form_fields.html" %}
+            </fieldset>
+        {% endblock %}
+        </div>
+        <div class="modal-footer">{% block modal-footer_f %}{% endblock %}</div>
+      </form>
     </div>
   </div>
 </div>
