@@ -57,7 +57,6 @@ class IndexView(tables.DataTableView):
         identity_providers = []
         try:
             client = api.keystone.keystoneclient(self.request)
-            print self.request.session.get('_unscopedtoken')
             identity_providers = client.federation.identity_providers.list()
         except Exception:
             exceptions.handle(self.request,
