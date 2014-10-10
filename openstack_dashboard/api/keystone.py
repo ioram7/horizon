@@ -17,7 +17,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import collections
 import logging
 
 from django.conf import settings
@@ -45,8 +44,7 @@ DEFAULT_ROLE = None
 class IdentityAPIVersionManager(base.APIVersionManager):
     def upgrade_v2_user(self, user):
         if getattr(user, "project_id", None) is None:
-            user.project_id = getattr(user, "default_project_id",
-                                      getattr(user, "tenantId", None))
+            user.project_id = getattr(user, "tenantId", None)
         return user
 
     def get_project_manager(self, *args, **kwargs):
@@ -219,7 +217,6 @@ def tenant_create(request, name, description=None, enabled=None,
 
 def get_default_domain(request):
     """Gets the default domain object to use when creating Identity object.
-
     Returns the domain context if is set, otherwise return the domain
     of the logon user.
     """
@@ -253,9 +250,8 @@ def tenant_delete(request, project):
     return manager.delete(project)
 
 
-def tenant_list(request, paginate=False, marker=None, domain=None, user=None,
-                admin=True):
-    manager = VERSIONS.get_project_manager(request, admin=admin)
+def tenant_list(request, paginate=False, marker=None, domain=None, user=None):
+    manager = VERSIONS.get_project_manager(request, admin=True)
     page_size = utils.get_page_size(request)
 
     limit = None
@@ -461,16 +457,6 @@ def remove_group_user(request, group_id, user_id):
     return manager.remove_from_group(group=group_id, user=user_id)
 
 
-def role_assignments_list(request, project=None, user=None, role=None,
-                          group=None, domain=None, effective=False):
-    if VERSIONS.active < 3:
-        raise exceptions.NotAvailable
-
-    manager = keystoneclient(request, admin=True).role_assignments
-    return manager.list(project=project, user=user, role=role, group=group,
-                        domain=domain, effective=effective)
-
-
 def role_create(request, name):
     manager = keystoneclient(request, admin=True).roles
     return manager.create(name)
@@ -496,59 +482,12 @@ def role_list(request):
     return keystoneclient(request, admin=True).roles.list()
 
 
-def roles_for_user(request, user, project=None, domain=None):
-    """Returns a list of user roles scoped to a project or domain."""
+def roles_for_user(request, user, project):
     manager = keystoneclient(request, admin=True).roles
     if VERSIONS.active < 3:
         return manager.roles_for_user(user, project)
     else:
-        return manager.list(user=user, domain=domain, project=project)
-
-
-def get_domain_users_roles(request, domain):
-    users_roles = collections.defaultdict(list)
-    domain_role_assignments = role_assignments_list(request,
-                                                    domain=domain)
-    for role_assignment in domain_role_assignments:
-        if not hasattr(role_assignment, 'user'):
-            continue
-        user_id = role_assignment.user['id']
-        role_id = role_assignment.role['id']
-        users_roles[user_id].append(role_id)
-    return users_roles
-
-
-def add_domain_user_role(request, user, role, domain):
-    """Adds a role for a user on a domain."""
-    manager = keystoneclient(request, admin=True).roles
-    return manager.grant(role, user=user, domain=domain)
-
-
-def remove_domain_user_role(request, user, role, domain=None):
-    """Removes a given single role for a user from a domain."""
-    manager = keystoneclient(request, admin=True).roles
-    return manager.revoke(role, user=user, domain=domain)
-
-
-def get_project_users_roles(request, project):
-    users_roles = collections.defaultdict(list)
-    if VERSIONS.active < 3:
-        project_users = user_list(request, project=project)
-
-        for user in project_users:
-            roles = roles_for_user(request, user.id, project)
-            roles_ids = [role.id for role in roles]
-            users_roles[user.id].extend(roles_ids)
-    else:
-        project_role_assignments = role_assignments_list(request,
-                                                         project=project)
-        for role_assignment in project_role_assignments:
-            if not hasattr(role_assignment, 'user'):
-                continue
-            user_id = role_assignment.user['id']
-            role_id = role_assignment.role['id']
-            users_roles[user_id].append(role_id)
-    return users_roles
+        return manager.list(user=user, project=project)
 
 
 def add_tenant_user_role(request, project=None, user=None, role=None,
@@ -602,7 +541,9 @@ def remove_group_role(request, role, group, domain=None, project=None):
 
 
 def remove_group_roles(request, group, domain=None, project=None):
-    """Removes all roles from a group on a domain or project."""
+    """Removes all roles from a group on a domain or project,
+    removing them from it.
+    """
     client = keystoneclient(request, admin=True)
     roles = client.roles.list(group=group, domain=domain, project=project)
     for role in roles:
@@ -611,9 +552,8 @@ def remove_group_roles(request, group, domain=None, project=None):
 
 
 def get_default_role(request):
-    """Gets the default role object from Keystone and saves it as a global.
-
-    Since this is configured in settings and should not change from request
+    """Gets the default role object from Keystone and saves it as a global
+    since this is configured in settings and should not change from request
     to request. Supports lookup by name or id.
     """
     global DEFAULT_ROLE
@@ -687,3 +627,90 @@ def keystone_backend_name():
         return settings.OPENSTACK_KEYSTONE_BACKEND['name']
     else:
         return 'unknown'
+
+# VO Management
+def vo_roles_list(request):
+    manager = keystoneclient(request, admin=False).virtual_organisations.roles
+    return manager.list()
+
+def vo_role_create(request, vo_name, vo_role_name, pin, auto_join, description=None, enabled=False):
+    manager = keystoneclient(request, admin=True).virtual_organisations.roles
+    return manager.create(vo_name,
+                          vo_role_name,
+                          pin,
+                          description,
+                          enabled,
+                          auto_join)
+
+def vo_role_get(request, vo_role_id):
+    manager = keystoneclient(request).virtual_organisations.roles
+    return manager.get(vo_role_id)
+
+def vo_role_delete(request, vo_role_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.roles
+    return manager.delete(vo_role_id)
+
+
+def vo_role_update(request, vo_role_id, vo_name, vo_role_name, pin, auto_join, description=None, enabled=False, vo_is_domain=False):
+    manager = keystoneclient(request, admin=True).virtual_organisations.roles
+    return manager.update(vo_role_id,
+                          auto_join,
+                          description,
+                          enabled,
+                          pin,
+                          vo_is_domain,
+                          vo_name,
+                          vo_role_name)
+
+def vo_requests_list(request, vo_role_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.requests
+    return manager.list(vo_role_id)
+
+def vo_role_approve_request(request, vo_role_id, request_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.requests
+    return manager.approve(vo_role_id, request_id)
+
+def vo_role_delete_request(request, vo_role_id, request_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.requests
+    return manager.delete(vo_role_id, request_id)
+
+def vo_blacklist_list_all(request):
+    manager = keystoneclient(request, admin=True).virtual_organisations.blacklist
+    return manager.list()
+
+def vo_blacklist_list(request, vo_role_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.blacklist
+    return manager.get(vo_role_id)
+
+def vo_blacklist_delete_entry(request, vo_role_id, vo_blacklist_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.blacklist
+    print "keystone.py"
+    return manager.delete(vo_role_id, vo_blacklist_id)
+
+def vo_membership_join(request, vo_name, pin, vo_role):
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
+    return manager.join(vo_name, pin, vo_role)
+
+def vo_membership_get(request, vo_role, member_id):
+    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    return manager.get(vo_role, member_id)
+
+def vo_membership_check(request, vo_role):
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
+    return manager.check(vo_role)
+
+def vo_membership_list(request, vo_role):
+    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    return manager.list(vo_role,)
+
+def vo_membership_update(request, vo_role, member, idp, new_vo_role):
+    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    return manager.update(vo_role, member, idp, new_vo_role)
+
+def vo_membership_resign(request, vo_role, member):
+    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    return manager.resign(vo_role, member)
+
+def vo_membership_delete(request, vo_role, member, idp):
+    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    return manager.delete(vo_role, member, idp)

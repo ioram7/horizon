@@ -1,0 +1,28 @@
+{% extends "horizon/common/_modal.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block modal_id %}role_manage_membership{% endblock %}
+{% block modal-header %}{% trans "Manage Role Membership" %}{% endblock %}
+
+{% block modal-body %}
+    <div class="role-summary">
+    <h3 class="role-heading">Role summary</h3>
+	    <dl>
+		    <dt>Role name:</dt>
+			    <dd>{{ role.vo_name }}</dd>
+		    <dt>Description:</dt>
+			    <dd>{{ role.description }}</dd>
+		    <dt>Group ID:</dt>
+			    <dd>{{role.group_id}}</dd>
+
+	    </dl>
+    </div>
+    {{ table.render }}
+{% endblock %}
+
+{% block modal-footer %}
+<a href="{% url 'horizon:admin:virtual_organisations:index' %}" class="btn secondary cancel close">{% trans "Close" %}</a>
+{% endblock %}
+
+
