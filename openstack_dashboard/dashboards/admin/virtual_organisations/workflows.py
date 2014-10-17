@@ -9,14 +9,14 @@ from openstack_dashboard.api import keystone
 
 
 class CreateRoleInfoAction(workflows.Action):
-    name = forms.RegexField(label=_("Name"),
+    name = forms.RegexField(label=_("VO Name"),
                             max_length=255,
                             regex=r'^[\w\.\- ]+$',
-                            error_messages={'invalid': _('Name may only '
+                            error_messages={'invalid': _('VO Name may only '
                                 'contain letters, numbers, underscores, '
                                 'periods and hyphens.')},
-                            help_text=_("Name of the Role"))
-    vo_role = forms.RegexField(label=_("Role"),
+                            help_text=_("Name of the VO Role"))
+    vo_role = forms.RegexField(label=_("VO Role"),
                              regex=r'^[\w\.\- ]+$',
                              required=True,
                              initial='')
@@ -29,14 +29,14 @@ class CreateRoleInfoAction(workflows.Action):
                           help_text=_("Password used to send a join request"))
     auto_join = forms.BooleanField(label=_("Automatic Joining"),
                                    help_text=_("Users won't need administrator "
-                                               "validation to join the role"),
+                                               "validation to join the VO role"),
 				                   required=False)
     class Meta:
-        name = _("Role Info")
+        name = _("VO Role Info")
         help_text = _("From here you can create a new "
-                      "role.<br>"
+                      "VO role.<br>"
                       "Automatic Joining means users won't need an administrator "
-                      "validation to join the role")
+                      "validation to join the VO role")
 
     def clean(self):
         return self.cleaned_data
@@ -53,10 +53,10 @@ class CreateRoleInfo(workflows.Step):
 
 class CreateRole(workflows.Workflow):
     slug = "create_role"
-    name = _("Create Role")
-    finalize_button_name = _("Create Role")
-    success_message = _('Created new role "%s".')
-    failure_message = _('Unable to create role "%s".')
+    name = _("Create VO Role")
+    finalize_button_name = _("Create VO Role")
+    success_message = _('Created new VO role "%s".')
+    failure_message = _('Unable to create VO role "%s".')
     success_url = "horizon:admin:virtual_organisations:index"
     default_steps = (CreateRoleInfo,
                      )
@@ -74,7 +74,7 @@ class CreateRole(workflows.Workflow):
                                               description=data["description"], 
                                               enabled=data["enabled"])
         except Exception:
-            exceptions.handle(request, _('Unable to create role.'))
+            exceptions.handle(request, _('Unable to create VO role.'))
             return False
         return True
 
@@ -84,9 +84,9 @@ class UpdateRoleInfoAction(CreateRoleInfoAction):
     role_id = forms.CharField(widget=forms.widgets.HiddenInput)
 
     class Meta:
-        name = _("Role Info")
+        name = _("VO Role Info")
         slug = 'update_info'
-        help_text = _("From here you can edit the role details.")
+        help_text = _("From here you can edit the VO role details.")
         
 
     def clean(self):
@@ -105,10 +105,10 @@ class UpdateRoleInfo(workflows.Step):
 
 class UpdateRole(workflows.Workflow):
     slug = "update_role"
-    name = _("Edit Role")
+    name = _("Edit VO Role")
     finalize_button_name = _("Save")
-    success_message = _('Modified role "%s".')
-    failure_message = _('Unable to modify role "%s".')
+    success_message = _('Modified VO role "%s".')
+    failure_message = _('Unable to modify VO role "%s".')
     success_url = "horizon:admin:virtual_organisations:index"
     default_steps = (UpdateRoleInfo,
                      )
@@ -128,7 +128,7 @@ class UpdateRole(workflows.Workflow):
                                                 enabled=data["enabled"],
                                                 vo_is_domain=False)
         except Exception:
-            exceptions.handle(request, _('Unable to update role.'))
+            exceptions.handle(request, _('Unable to update VO role.'))
             return False
         return True
 
@@ -176,11 +176,11 @@ class AddUserAction(workflows.MembershipAction):
 class AddUserStep(workflows.UpdateMembersStep):
     action_class = AddUserAction
     depends_on = ("role_id",)
-    help_text = _("You can control the membership of a role by moving "
+    help_text = _("You can control the membership of a VO role by moving "
                   "users from the left column to the right column. Only users "
-                  "in the right column will be role members ")
+                  "in the right column will be VO role members ")
     available_list_title = _("Non Members")
-    members_list_title = _("Role Members")
+    members_list_title = _("VO Role Members")
     no_available_text = _("No users found.")
     no_members_text = _("No users selected. ")
     show_roles = False
@@ -223,7 +223,7 @@ class MoveUserAction(workflows.MembershipAction):
         super(MoveUserAction, self).__init__(request,
                                                         *args,
                                                         **kwargs)
-        err_msg = _('Unable to get the role list')
+        err_msg = _('Unable to get the VO role list')
 
         default_role_field_name = self.get_default_role_field_name()
         self.fields[default_role_field_name] = forms.CharField(required=False)
@@ -250,11 +250,11 @@ class MoveUserStep(workflows.UpdateMembersStep):
     depends_on = ("user_id",)
     help_text = _("You can control the membership of the user by moving "
                   "roles from the left column to the right column. User will "
-                  "be a member of the roles in the right column")
-    available_list_title = _("Not A Member Of These Roles")
-    members_list_title = _("Member Of These Roles")
-    no_available_text = _("No role found.")
-    no_members_text = _("No roles selected. ")
+                  "be a member of the VO roles in the right column")
+    available_list_title = _("Not A Member Of These VO Roles")
+    members_list_title = _("Member Of These VO Roles")
+    no_available_text = _("No VO role found.")
+    no_members_text = _("No VO roles selected. ")
     show_roles = False
 
     contribute = ("role_users",)

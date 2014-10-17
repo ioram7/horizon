@@ -6,8 +6,8 @@ from openstack_dashboard import api
 
 
 class DeleteRole(tables.DeleteAction):
-    data_type_singular = _("Role")
-    data_type_plural = _("Roles")
+    data_type_singular = _("VO Role")
+    data_type_plural = _("VO Roles")
 
     def delete(self, request, obj_id):
         #TODO: call api to delete entry
@@ -19,14 +19,14 @@ class DeleteRole(tables.DeleteAction):
         
 class CreateRole(tables.LinkAction):
     name = "create"
-    verbose_name = _("Create Role")
+    verbose_name = _("Create VO Role")
     url = "horizon:admin:virtual_organisations:create"
     classes = ("ajax-modal", "btn-create")
     policy = ("identity" , "identity:create_role")
 
 class UpdateRole(tables.LinkAction):
     name = "update"
-    verbose_name = _("Edit Role Information")
+    verbose_name = _("Edit VO Role Information")
     url = "horizon:admin:virtual_organisations:update"
     classes = ("ajax-modal", "btn-edit")
 
@@ -38,14 +38,14 @@ class UpdateRole(tables.LinkAction):
 
 class ManageRole(tables.LinkAction):
     name = "manage"
-    verbose_name = _("Manage Role Membership")
+    verbose_name = _("Manage VO Role Membership")
     url = "horizon:admin:virtual_organisations:manage"
 
 
 class RoleTable(tables.DataTable):
     name = tables.Column('vo_name', verbose_name=_('Virtual Organization'))
     roles = tables.Column('vo_role', 
-                        verbose_name=_('Role'))                        
+                        verbose_name=_('VO Role'))
     status = tables.Column('enabled', 
                         verbose_name=_('Status'))
     joining = tables.Column('automatic_join', 
@@ -59,7 +59,7 @@ class RoleTable(tables.DataTable):
                         verbose_name=_('Actions'))
     class Meta:
         name = "roles"
-        verbose_name = _("Roles")
+        verbose_name = _("VO Roles")
         table_actions = (CreateRole, DeleteRole)
         row_actions = (UpdateRole,
                        ManageRole,
@@ -125,7 +125,7 @@ class ManageTable(tables.DataTable):
                         verbose_name=_('Actions'))'''
     class Meta:
         name = "manage"
-        verbose_name = _("VO Role Membership")
+        verbose_name = _("Manage VO Role Membership")
         table_actions = (ViewBlacklist,ViewRequests, RemoveUserRole)
         '''row_actions = RemoveUserRole'''
 
@@ -164,7 +164,7 @@ class RequestTable(tables.DataTable):
     vo = tables.Column('vo',
                         verbose_name=_('Virtual Organization'))   
     role = tables.Column('role', 
-                        verbose_name=_('Role'))
+                        verbose_name=_('VO Role'))
     user_id = tables.Column('user_id', 
                         verbose_name=_('User ID'))
     idp = tables.Column('idp', 

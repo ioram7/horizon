@@ -708,7 +708,8 @@ def vo_membership_update(request, vo_role, member, idp, new_vo_role):
     return manager.update(vo_role, member, idp, new_vo_role)
 
 def vo_membership_resign(request, vo_role, member):
-    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
+    print "__keystone.py__"
     return manager.resign(vo_role, member)
 
 def vo_membership_delete(request, vo_role, member, idp):

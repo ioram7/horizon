@@ -56,7 +56,7 @@ class UpdateView(workflows.WorkflowView):
                 'pin' : "",}
         except Exception:
             exceptions.handle(self.request,
-                              _('Unable to retrieve role details.'),
+                              _('Unable to retrieve VO role details.'),
                               redirect=reverse_lazy(INDEX_URL))
 
 class ManageView(tables.DataTableView):
@@ -75,7 +75,7 @@ class ManageView(tables.DataTableView):
             return data
         except Exception as e: 
             exceptions.handle(self.request,
-                              _('Unable to retrieve role membership.'),
+                              _('Unable to retrieve VO role membership.'),
                               redirect=reverse_lazy(INDEX_URL))
     def get_context_data(self, **kwargs):
         context = super(ManageView, self).get_context_data(**kwargs)
@@ -85,7 +85,7 @@ class ManageView(tables.DataTableView):
             print context["role"].id
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role information.'))
+                _('Unable to retrieve VO role information.'))
 
         return context
 
@@ -102,7 +102,7 @@ class ViewRequestsView(tables.DataTableView):
             data = api.keystone.vo_requests_list(self.request, vo_role_id)
         except Exception:
             exceptions.handle(self.request,
-                              _('Unable to retrieve role join requests.'))
+                              _('Unable to retrieve VO role join requests.'))
         #data.sort(key=lambda vo: vo.vo_name.lower())
         return data
 
@@ -113,7 +113,7 @@ class ViewRequestsView(tables.DataTableView):
             context["role"] = api.keystone.vo_role_get(self.request, vo_role_id)
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role information.'))
+                _('Unable to retrieve VO role information.'))
         return context
 
 class BlacklistView(tables.DataTableView):
@@ -128,7 +128,7 @@ class BlacklistView(tables.DataTableView):
             data = api.keystone.vo_blacklist_list(self.request, vo_role_id)
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role blacklist.'))
+                _('Unable to retrieve VO role blacklist.'))
         return data
         
     def get_context_data(self, **kwargs):
@@ -138,7 +138,7 @@ class BlacklistView(tables.DataTableView):
             context["role"] = api.keystone.vo_role_get(self.request, vo_role_id)
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role information.'))
+                _('Unable to retrieve VO role information.'))
         return context
 
 class ChangeRoleView(workflows.WorkflowView):
@@ -156,7 +156,7 @@ class ChangeRoleView(workflows.WorkflowView):
             a = 1 #context["user"] = Userr(2, 115, 'tote')
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role information.'))
+                _('Unable to retrieve VO role information.'))
         return context
 
 class AddUserView(workflows.WorkflowView):
@@ -169,7 +169,7 @@ class AddUserView(workflows.WorkflowView):
             role = api.keystone.vo_role_get(self.request, role_id)
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role information.'))
+                _('Unable to retrieve VO role information.'))
 
         return {'role_id': role_id,
                 'name': role.vo_name,}
@@ -181,5 +181,5 @@ class AddUserView(workflows.WorkflowView):
             context["role"] = api.keystone.vo_role_get(self.request, role_id)            
         except Exception:
             exceptions.handle(self.request,
-                _('Unable to retrieve role information.'))
+                _('Unable to retrieve VO role information.'))
         return context

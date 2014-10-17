@@ -3,14 +3,16 @@
 {% load url from future %}
 
 {% block modal_id %}role_manage_membership{% endblock %}
-{% block modal-header %}{% trans "Manage Role Membership" %}{% endblock %}
+{% block modal-header %}{% trans "Manage VO Role Membership" %}{% endblock %}
 
 {% block modal-body %}
     <div class="role-summary">
-    <h3 class="role-heading">Role summary</h3>
+    <h3 class="role-heading">VO Role summary</h3>
 	    <dl>
-		    <dt>Role name:</dt>
+		    <dt>VO name:</dt>
 			    <dd>{{ role.vo_name }}</dd>
+		    <dt>VO Role name:</dt>
+			    <dd>{{ role.vo_role }}</dd>
 		    <dt>Description:</dt>
 			    <dd>{{ role.description }}</dd>
 		    <dt>Group ID:</dt>

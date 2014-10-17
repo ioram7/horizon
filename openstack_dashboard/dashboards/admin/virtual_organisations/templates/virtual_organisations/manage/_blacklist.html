@@ -7,12 +7,14 @@
 
 {% block modal-body %}
     <div class="role-summary">
-    <h3 class="role-heading">Role summary</h3>
+    <h3 class="role-heading">VO Role summary</h3>
 	    <dl>
-		    <dt>Role name:</dt>
-			    <dd>{{ role.name }}</dd>
+		    <dt>VO name:</dt>
+			    <dd>{{ role.vo_name }}</dd>
+		    <dt>VO Role name:</dt>
+			    <dd>{{ role.vo_role }}</dd>
 		    <dt>Description:</dt>
-			    <dd>{{ role.desc }}</dd>
+			    <dd>{{ role.description }}</dd>
 		    <dt>Group ID:</dt>
 			    <dd>{{role.group_id}}</dd>
 

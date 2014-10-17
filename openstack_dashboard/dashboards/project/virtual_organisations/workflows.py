@@ -12,13 +12,13 @@ class JoinRoleInfoAction(workflows.Action):
                           widget=forms.PasswordInput,
                           help_text=_("Password of the role"),
                           )
-    vo_role = forms.RegexField(label=_("Role"),
+    vo_role = forms.RegexField(label=_("VO Role"),
                              regex=r'^[\w\.\- ]+$',
                              required=True)
-    name = forms.RegexField(label=_("Name"),
+    name = forms.RegexField(label=_("VO Name"),
                             max_length=255,
                             regex=r'^[\w\.\- ]+$',
-                            error_messages={'invalid': _('Name may only '
+                            error_messages={'invalid': _('VO Name may only '
                                 'contain letters, numbers, underscores, '
                                 'periods and hyphens.')})
     class Meta:
@@ -37,10 +37,10 @@ class JoinRoleInfo(workflows.Step):
 
 class JoinRole(workflows.Workflow):
     slug = "join_role"
-    name = _("Join Role")
+    name = _("Join VO Role")
     finalize_button_name = _("Send Request")
-    success_message = _('Created new role "%s".')
-    failure_message = _('Unable to create role "%s".')
+    success_message = _('Created new VO role "%s".')
+    failure_message = _('Unable to create VO role "%s".')
     success_url = "horizon:project:virtual_organisations:index"
     default_steps = (JoinRoleInfo,
                      )
