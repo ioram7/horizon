@@ -16,6 +16,8 @@ class IndexView(tables.DataTableView):
     table_class = vo_tables.RoleTable
     template_name = 'project/virtual_organisations/index.html'
 
+    print "Ioram H Project/VO"
+
     def get_data(self):
         data = []
         try:

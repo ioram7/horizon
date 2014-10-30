@@ -630,6 +630,7 @@ def keystone_backend_name():
 
 # VO Management
 def vo_roles_list(request):
+    # If admin=True, regular users can't access!
     manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.list()
 

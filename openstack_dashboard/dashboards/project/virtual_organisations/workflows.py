@@ -8,19 +8,19 @@ from openstack_dashboard import api
 from openstack_dashboard.api import keystone
 
 class JoinRoleInfoAction(workflows.Action):    
-    pin = forms.CharField(label=_("PIN"),
-                          widget=forms.PasswordInput,
-                          help_text=_("Password of the role"),
-                          )
-    vo_role = forms.RegexField(label=_("VO Role"),
-                             regex=r'^[\w\.\- ]+$',
-                             required=True)
     name = forms.RegexField(label=_("VO Name"),
                             max_length=255,
                             regex=r'^[\w\.\- ]+$',
                             error_messages={'invalid': _('VO Name may only '
                                 'contain letters, numbers, underscores, '
                                 'periods and hyphens.')})
+    vo_role = forms.RegexField(label=_("VO Role"),
+                             regex=r'^[\w\.\- ]+$',
+                             required=True)
+    pin = forms.CharField(label=_("PIN"),
+                          widget=forms.PasswordInput,
+                          help_text=_("Password of the role"),
+                          )
     class Meta:
         name = _("Join Request")
         help_text = _("From here you can make a request to join a "
@@ -39,8 +39,8 @@ class JoinRole(workflows.Workflow):
     slug = "join_role"
     name = _("Join VO Role")
     finalize_button_name = _("Send Request")
-    success_message = _('Created new VO role "%s".')
-    failure_message = _('Unable to create VO role "%s".')
+    success_message = _('Request sent to VO "%s".')
+    failure_message = _('Unable to find role in VO "%s".')
     success_url = "horizon:project:virtual_organisations:index"
     default_steps = (JoinRoleInfo,
                      )
@@ -50,11 +50,13 @@ class JoinRole(workflows.Workflow):
 
     def handle(self, request, data):
         try:
+	    #Ioram 29/10/2014
+   	    #print "===VO: "+data["name"]+" VO Role: "+data["vo_role"]+" PIN: "+data["pin"]
             self.object = api.keystone.vo_membership_join(request,
                                               vo_name=data["name"],
                                               vo_role=data["vo_role"],
                                               pin=data["pin"])
         except Exception:
-            exceptions.handle(request, _('Unable to send join request.'))
+            exceptions.handle(request, _('Join request failed.'))
             return False
         return True

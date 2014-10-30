@@ -28,6 +28,7 @@ class IndexView(tables.DataTableView):
         data = []
         try:
             data = api.keystone.vo_roles_list(self.request)
+   #        print "Ioram H" 
         except Exception:
             exceptions.handle(self.request,
                               _('Unable to retrieve virtual organisation list.'))

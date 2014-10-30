@@ -162,13 +162,13 @@ class DeclineUser(tables.BatchAction):
 
 class RequestTable(tables.DataTable):
     vo = tables.Column('vo',
-                        verbose_name=_('Virtual Organization'))   
-    role = tables.Column('role', 
+                        verbose_name=_('Virtual Organization'))
+    role = tables.Column('role',
                         verbose_name=_('VO Role'))
     user_id = tables.Column('user_id', 
                         verbose_name=_('User ID'))
     idp = tables.Column('idp', 
-                        verbose_name=_('Identity Provider'))                        
+                        verbose_name=_('Identity Provider'))
     actions = tables.Column('actions', 
                         verbose_name=_('Actions'))
     class Meta:
