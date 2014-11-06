@@ -24,8 +24,8 @@ class BasePanels(horizon.PanelGroup):
               'instances',
               'volumes',
               'images',
-              'access_and_security',
-              'virtual_organisations',)
+              'access_and_security',)
+#              'virtual_organisations',)
 
 
 class NetworkPanels(horizon.PanelGroup):

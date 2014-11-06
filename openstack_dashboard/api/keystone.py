@@ -682,6 +682,7 @@ def keystone_backend_name():
 
 # VO Management
 def vo_roles_list(request):
+    #Ioram> admin must be False, otherwise Roles are not listed to regular users.
     manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.list()
 
@@ -752,6 +753,8 @@ def vo_membership_check(request, vo_role):
 
 def vo_membership_list(request, vo_role):
     manager = keystoneclient(request, admin=True).virtual_organisations.members
+    #Ioram 31/10/2014
+    #print "IORAM API Keystone"
     return manager.list(vo_role,)
 
 def vo_membership_update(request, vo_role, member, idp, new_vo_role):
@@ -759,7 +762,7 @@ def vo_membership_update(request, vo_role, member, idp, new_vo_role):
     return manager.update(vo_role, member, idp, new_vo_role)
 
 def vo_membership_resign(request, vo_role, member):
-    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
     return manager.resign(vo_role, member)
 
 def vo_membership_delete(request, vo_role, member, idp, new_vo_role):

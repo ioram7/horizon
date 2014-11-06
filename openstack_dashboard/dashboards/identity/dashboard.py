@@ -22,7 +22,7 @@ class Identity(horizon.Dashboard):
     name = _("Identity")
     slug = "identity"
     default_panel = 'projects'
-    panels = ('domains', 'projects', 'users', 'groups', 'roles', 'mappings', 'identity_providers', 'virtual_organisations', )
+    panels = ('domains', 'projects', 'users', 'groups', 'roles', 'mappings', 'identity_providers', 'my_voroles', 'vo_admin', )
 
 
 horizon.register(Identity)
