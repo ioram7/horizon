@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Virtual Organizations" %}{% endblock %}
+
+{% block page_header %}
+  <h2>{% trans "VO Role" %}: {{role.vo_role}}@{{role.vo_name}} </h2>
+{% endblock page_header %}
+
+{% block main %}
+   
+    {% include "identity/vo_admin/manage/_blacklist.html" %}
+    
+{% endblock %}
+

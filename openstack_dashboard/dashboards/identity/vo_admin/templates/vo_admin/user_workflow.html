@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Manage User's VO Role Memberships" %}{% endblock %}
+
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=_("Manage VO Role Membership") %}
+{% endblock page_header %}
+
+{% block main %}
+<div class="role-summary">
+    <h3 class="role-heading">VO Role summary</h3>
+	    <dl>
+		    <dt>VO Role name:</dt>
+			    <dd>{{ role.name }}</dd>
+		    <dt>Description:</dt>
+			    <dd>{{ role.desc }}</dd>
+		    <dt>Group ID:</dt>
+			    <dd>{{role.group_id}}</dd>
+
+	    </dl>
+    </div>
+    {% include 'horizon/common/_workflow.html' %}
+{% endblock %}

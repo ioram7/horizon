@@ -1,0 +1,30 @@
+{% extends "horizon/common/_modal.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block modal_id %}role_manage_blacklist{% endblock %}
+{% block modal-header %}{% trans "Blacklisted Users" %}{% endblock %}
+
+{% block modal-body %}
+    <div class="role-summary">
+    <h3 class="role-heading">VO Role summary</h3>
+	    <dl>
+		    <dt>VO name:</dt>
+			    <dd>{{ role.vo_name }}</dd>
+		    <dt>VO Role name:</dt>
+			    <dd>{{ role.vo_role }}</dd>
+		    <dt>Description:</dt>
+			    <dd>{{ role.description }}</dd>
+		    <dt>Group ID:</dt>
+			    <dd>{{role.group_id}}</dd>
+
+	    </dl>
+    </div>
+    {{ table.render }}
+{% endblock %}
+
+{% block modal-footer %}
+<a href="{% url 'horizon:identity:vo_admin:manage' role.id %}" class="btn secondary cancel close">{% trans "Close" %}</a>
+{% endblock %}
+
+
