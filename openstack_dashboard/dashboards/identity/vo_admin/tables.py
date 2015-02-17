@@ -148,6 +148,9 @@ class ApproveUser(tables.BatchAction):
     classes = ("btn-enable",)
     def action(self, request, datum_id):
         try:
+	    #print "IORAM> 2015-02-03 - VO Role Approve Request"
+	    #print request
+	    #print self.table.kwargs.get('id')
             api.keystone.vo_role_approve_request(request, self.table.kwargs.get('id'), datum_id)
         except Exception as e:
             print e

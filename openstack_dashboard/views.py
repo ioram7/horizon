@@ -39,6 +39,7 @@ def get_user_home(user):
 def splash(request):
     if request.user.is_authenticated():
         return shortcuts.redirect(horizon.get_user_home(request.user))
+    #print "IORAM 2015-01-26"
     form = forms.Login(request)
     request.session.clear()
     request.session.set_test_cookie()

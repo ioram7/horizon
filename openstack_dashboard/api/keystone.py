@@ -681,13 +681,19 @@ def keystone_backend_name():
         return 'unknown'
 
 # VO Management
+#Ioram> admin must be False, otherwise Roles are not listed to regular users.
+#Ioram> admin must be False, otherwise Methods are not available to VoAdmins
+
 def vo_roles_list(request):
-    #Ioram> admin must be False, otherwise Roles are not listed to regular users.
+    manager = keystoneclient(request, admin=False).virtual_organisations.roles
+    return manager.list_all()
+
+def my_vo_roles_list(request):
     manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.list()
 
 def vo_role_create(request, vo_name, vo_role_name, pin, auto_join, description=None, enabled=False):
-    manager = keystoneclient(request, admin=True).virtual_organisations.roles
+    manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.create(vo_name,
                           vo_role_name,
                           pin,
@@ -700,12 +706,12 @@ def vo_role_get(request, vo_role_id):
     return manager.get(vo_role_id)
 
 def vo_role_delete(request, vo_role_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.roles
+    manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.delete(vo_role_id)
 
 
 def vo_role_update(request, vo_role_id, vo_name, vo_role_name, pin, auto_join, description=None, enabled=False, vo_is_domain=False):
-    manager = keystoneclient(request, admin=True).virtual_organisations.roles
+    manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.update(vo_role_id,
                           auto_join,
                           description,
@@ -716,27 +722,27 @@ def vo_role_update(request, vo_role_id, vo_name, vo_role_name, pin, auto_join, d
                           vo_role_name)
 
 def vo_requests_list(request, vo_role_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.requests
+    manager = keystoneclient(request, admin=False).virtual_organisations.requests
     return manager.list(vo_role_id)
 
 def vo_role_approve_request(request, vo_role_id, request_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.requests
+    manager = keystoneclient(request, admin=False).virtual_organisations.requests
     return manager.approve(vo_role_id, request_id)
 
 def vo_role_delete_request(request, vo_role_id, request_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.requests
+    manager = keystoneclient(request, admin=False).virtual_organisations.requests
     return manager.delete(vo_role_id, request_id)
 
 def vo_blacklist_list_all(request):
-    manager = keystoneclient(request, admin=True).virtual_organisations.blacklist
+    manager = keystoneclient(request, admin=False).virtual_organisations.blacklist
     return manager.list()
 
 def vo_blacklist_list(request, vo_role_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.blacklist
+    manager = keystoneclient(request, admin=False).virtual_organisations.blacklist
     return manager.get(vo_role_id)
 
 def vo_blacklist_delete_entry(request, vo_role_id, vo_blacklist_entry_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.blacklist
+    manager = keystoneclient(request, admin=False).virtual_organisations.blacklist
     return manager.delete(vo_role_id, vo_blacklist_id)
 
 def vo_membership_join(request, vo_name, pin, vo_role):
@@ -744,7 +750,7 @@ def vo_membership_join(request, vo_name, pin, vo_role):
     return manager.join(vo_name, pin, vo_role)
 
 def vo_membership_get(request, vo_role, member_id):
-    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
     return manager.get(vo_role, member_id)
 
 def vo_membership_check(request, vo_role):
@@ -752,19 +758,19 @@ def vo_membership_check(request, vo_role):
     return manager.check(vo_role)
 
 def vo_membership_list(request, vo_role):
-    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
     #Ioram 31/10/2014
     #print "IORAM API Keystone"
     return manager.list(vo_role,)
 
 def vo_membership_update(request, vo_role, member, idp, new_vo_role):
-    manager = keystoneclient(request, admin=True).virtual_organisations.members
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
     return manager.update(vo_role, member, idp, new_vo_role)
 
 def vo_membership_resign(request, vo_role, member):
     manager = keystoneclient(request, admin=False).virtual_organisations.members
     return manager.resign(vo_role, member)
 
-def vo_membership_delete(request, vo_role, member, idp, new_vo_role):
-    manager = keystoneclient(request, admin=True).virtual_organisations.members
+def vo_membership_delete(request, vo_role, member, idp):
+    manager = keystoneclient(request, admin=False).virtual_organisations.members
     return manager.delete(vo_role, member, idp)

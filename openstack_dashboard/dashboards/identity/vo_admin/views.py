@@ -76,7 +76,6 @@ class ManageView(tables.DataTableView):
             data = api.keystone.vo_membership_list(self.request, role_id)
 	    #Ioram 01/11/2014
             #print "Ioram H Identity/VOAdmin/Views"
-            # Imprime objeto a ser exibido. Esta quebrando antes... Nao consegue achar atributos de usuario federado.
             #print data
             for datum in data:
                 uid = datum.id

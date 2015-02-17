@@ -21,7 +21,7 @@ class IndexView(tables.DataTableView):
     def get_data(self):
         data = []
         try:
-            data = api.keystone.vo_roles_list(self.request)
+            data = api.keystone.my_vo_roles_list(self.request)
         except Exception:
             exceptions.handle(self.request,
                               _('Unable to retrieve virtual organisation list.'))

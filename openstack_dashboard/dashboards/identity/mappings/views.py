@@ -62,8 +62,7 @@ class IndexView(tables.DataTableView):
         except Exception:
             exceptions.handle(self.request,
                               _('Unable to retrieve mapping list.'))
-        return [MappingEntry(mapping.id, json.loads(mapping.rules)) for mapping in mappings]
-
+        return [MappingEntry(mapping.id, mapping.rules) for mapping in mappings]
 
 class UpdateView(forms.ModalFormView):
     form_class = project_forms.UpdateMappingForm
