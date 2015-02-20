@@ -31,10 +31,12 @@ class IndexView(tables.DataTableView):
         data = []
         try:
             data = api.keystone.vo_roles_list(self.request)
-            #print "Ioram Data Ok" 
         except Exception:
             exceptions.handle(self.request,
                               _('Unable to retrieve virtual organisation list.'))
+	#print "DDDDDDDDDDDDDDDDDDDDDDDDDD"
+        #print data
+	#print "DDDDDDDDDDDDDDDDDDDDDDDDDD"
         data.sort(key=lambda vo: vo.vo_name.lower())
         return data
 
@@ -79,8 +81,12 @@ class ManageView(tables.DataTableView):
             #print data
             for datum in data:
                 uid = datum.id
+		uname = datum.name
                 idp = datum.idp
-                datum.id = "%(uid)s@%(idp)s" % {"uid":uid, "idp":idp}
+                datum.id   = "%(id)s@%(idp)s" % {"id":uid, "idp":idp}
+                #datum.id   = "%(id)s" % {"id":uid}
+                datum.name = "%(uname)s" % {"uname":uname}
+                datum.idp  = "%(idp)s" % {"idp":idp}
             return data
         except Exception as e: 
             exceptions.handle(self.request,
@@ -91,7 +97,7 @@ class ManageView(tables.DataTableView):
         role_id = self.kwargs['id']
         try:
             context["role"] = api.keystone.vo_role_get(self.request, role_id)
-            print context["role"].id
+            #print context["role"].id
         except Exception:
             exceptions.handle(self.request,
                 _('Unable to retrieve VO role information.'))

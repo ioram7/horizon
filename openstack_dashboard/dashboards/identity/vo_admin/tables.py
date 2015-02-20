@@ -116,9 +116,8 @@ class RemoveUserRole(tables.DeleteAction):
     action_present = _("Remove")
 
     def delete(self, request, obj_id):
-        print obj_id
+        #print obj_id
         data = obj_id.split('@')
-        print request
         try:
             api.keystone.vo_membership_delete(request, self.table.kwargs.get('id'), data[0], data[1])
         except Exception as e:
@@ -127,17 +126,19 @@ class RemoveUserRole(tables.DeleteAction):
         return True
 
 class ManageTable(tables.DataTable):
-    name = tables.Column('id', 
+#    id = tables.Column('id',
+#                        verbose_name=_('UserId'))
+    name = tables.Column('name', 
                         verbose_name=_('User'))
-    '''idp = tables.Column('idp', 
-                        verbose_name=_('IDP'))                        
+    idp = tables.Column('idp', 
+                        verbose_name=_('Identity Provider'))
     actions = tables.Column('actions', 
-                        verbose_name=_('Actions'))'''
+                        verbose_name=_('Actions'))
     class Meta:
         name = "manage"
         verbose_name = _("Manage VO Role Membership")
-        table_actions = (ViewBlacklist,ViewRequests, RemoveUserRole)
-        '''row_actions = RemoveUserRole'''
+        table_actions = (ViewBlacklist, ViewRequests, RemoveUserRole)
+        row_actions = (RemoveUserRole,)
 
 class ApproveUser(tables.BatchAction):
     name = "approve_user"
@@ -178,8 +179,10 @@ class RequestTable(tables.DataTable):
                         verbose_name=_('Virtual Organization'))
     role = tables.Column('role',
                         verbose_name=_('VO Role'))
-    user_id = tables.Column('user_id', 
-                        verbose_name=_('User ID'))
+#    user_id = tables.Column('user_id', 
+#                        verbose_name=_('User ID'))
+    user_name = tables.Column('uname', 
+                        verbose_name=_('User'))
     idp = tables.Column('idp', 
                         verbose_name=_('Identity Provider'))
     actions = tables.Column('actions', 
@@ -199,7 +202,6 @@ class RemoveBlacklist(tables.BatchAction):
     classes = ("btn-disable", )
     def action(self, request, datum_id):
         #TODO: Remove User from blacklist
-        print datum_id        
         try:
             api.keystone.vo_blacklist_delete_entry(request, self.table.kwargs.get('id'), datum_id)
         except Exception as e:

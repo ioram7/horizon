@@ -17,6 +17,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import logging
 
 from django.conf import settings
@@ -681,16 +682,15 @@ def keystone_backend_name():
         return 'unknown'
 
 # VO Management
-#Ioram> admin must be False, otherwise Roles are not listed to regular users.
 #Ioram> admin must be False, otherwise Methods are not available to VoAdmins
 
 def vo_roles_list(request):
     manager = keystoneclient(request, admin=False).virtual_organisations.roles
-    return manager.list_all()
-
-def my_vo_roles_list(request):
-    manager = keystoneclient(request, admin=False).virtual_organisations.roles
     return manager.list()
+
+def vo_roles_list_user_vo_roles(request):
+    manager = keystoneclient(request, admin=False).virtual_organisations.roles
+    return manager.list_user_vo_roles(request.user.id, request.user.idp_id)
 
 def vo_role_create(request, vo_name, vo_role_name, pin, auto_join, description=None, enabled=False):
     manager = keystoneclient(request, admin=False).virtual_organisations.roles
@@ -723,7 +723,17 @@ def vo_role_update(request, vo_role_id, vo_name, vo_role_name, pin, auto_join, d
 
 def vo_requests_list(request, vo_role_id):
     manager = keystoneclient(request, admin=False).virtual_organisations.requests
-    return manager.list(vo_role_id)
+    data = manager.list(vo_role_id)
+    for datum in data:
+        if datum.idp == "LOCAL":
+            user = keystoneclient(request, admin=False).users.get(datum.user_id)
+            datum.uname = user.name
+        else :
+            datum.uname = datum.user_id
+        vo_role = keystoneclient(request).virtual_organisations.roles.get(datum.vo_role_id)
+	datum.role = vo_role.vo_role
+	datum.vo = vo_role.vo_name
+    return data
 
 def vo_role_approve_request(request, vo_role_id, request_id):
     manager = keystoneclient(request, admin=False).virtual_organisations.requests
@@ -739,11 +749,22 @@ def vo_blacklist_list_all(request):
 
 def vo_blacklist_list(request, vo_role_id):
     manager = keystoneclient(request, admin=False).virtual_organisations.blacklist
-    return manager.get(vo_role_id)
+    data = manager.get(vo_role_id)
+    for datum in data:
+        if datum.idp == "LOCAL":
+            user = keystoneclient(request, admin=False).users.get(datum.user_id)
+            datum.uname = user.name
+        else :
+            datum.uname = datum.user_id
+        vo_role = keystoneclient(request).virtual_organisations.roles.get(datum.vo_role_id)
+	datum.role = vo_role.vo_role
+	datum.vo = vo_role.vo_name
+            
+    return data
 
 def vo_blacklist_delete_entry(request, vo_role_id, vo_blacklist_entry_id):
     manager = keystoneclient(request, admin=False).virtual_organisations.blacklist
-    return manager.delete(vo_role_id, vo_blacklist_id)
+    return manager.delete(vo_role_id, vo_blacklist_entry_id)
 
 def vo_membership_join(request, vo_name, pin, vo_role):
     manager = keystoneclient(request, admin=False).virtual_organisations.members
@@ -759,8 +780,6 @@ def vo_membership_check(request, vo_role):
 
 def vo_membership_list(request, vo_role):
     manager = keystoneclient(request, admin=False).virtual_organisations.members
-    #Ioram 31/10/2014
-    #print "IORAM API Keystone"
     return manager.list(vo_role,)
 
 def vo_membership_update(request, vo_role, member, idp, new_vo_role):
